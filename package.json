@@ -1,6 +1,6 @@
 {
   "name": "riddlen-contracts",
-  "version": "1.0.0",
+  "version": "0.3.0",
   "description": "Smart contracts for the Riddlen Protocol - Human Intelligence Validation Network",
   "main": "index.js",
   "scripts": {

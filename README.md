@@ -1,55 +1,130 @@
 # Riddlen Protocol Smart Contracts
 
-Smart contracts powering the Riddlen ecosystem - a gamified NFT platform with token burning mechanics and community rewards.
+[![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](./VERSION)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](#testing)
 
-## Overview
+Smart contracts powering the Riddlen ecosystem - a human intelligence validation network with weekly NFT riddles, progressive burn mechanics, and reputation systems.
 
-Riddlen is a Web3 protocol that combines NFT riddles, token economics, and community engagement through innovative burning and reward mechanisms.
+## 🎯 Overview
 
-## Contracts
+Riddlen is a Web3 protocol implementing **Proof-of-Solve** consensus through NFT-based weekly riddles. Players mint NFTs to attempt riddles, with progressive burn costs and substantial RDLN prize pools, while earning RON reputation tokens for successful solving.
+
+### ✨ Key Features (v0.3.0)
+
+- 🧩 **Weekly Riddle System**: 1000 riddles over 20 years starting January 1, 2025
+- 🔥 **Progressive Burn Protocol**: Failed attempts cost 1, 2, 3... N RDLN per NFT
+- 💰 **Massive Prize Pools**: 700M RDLN allocated across randomized prize distributions
+- 🏆 **RON Reputation System**: Soul-bound tokens for intelligence validation
+- 🔄 **NFT Resale Market**: Tradeable riddle NFTs with commission structure
+- ⏰ **Biennial Halving**: Mint costs halve every 2 years
+- 🎲 **Randomized Parameters**: Each riddle has unique mint rates, prizes, and winner slots
+
+## 📋 Contract Architecture
+
+### Core System Contracts
+
+| Contract | Description | Status | Tests |
+|----------|-------------|--------|-------|
+| **RDLN.sol** | ERC20 token with burn mechanics | ✅ Complete | 20 passing |
+| **RON.sol** | Soul-bound reputation system | ✅ Complete | 26 passing |
+| **RiddleNFT_v2.sol** | Weekly riddle NFT system | ✅ Complete | 13 passing |
 
 ### Token Contracts (`/contracts/token/`)
-- **RDLN Token**: Main utility token for the Riddlen ecosystem
-- **Token Economics**: Burning mechanisms and reward distribution
+- **RDLN**: Main utility token (1B supply, progressive burns, allocations)
+- **RON**: Reputation token (soul-bound, tier-based, oracle validation)
 
 ### NFT Contracts (`/contracts/nft/`)
-- **RiddleNFT**: Core NFT contract for riddle-based collectibles
-- **RiddleFactory**: Factory contract for creating and managing riddles
+- **RiddleNFT_v2**: Weekly riddle system with resale mechanics
+- **RiddleNFT_v1**: Legacy attempt-based system (deprecated)
 
-### Game Contracts (`/contracts/game/`)
-- **PrizePool**: Prize distribution and management system
-- **BurnProtocol**: Token burning mechanics and rewards
+### Interfaces (`/contracts/interfaces/`)
+- **IRDLN**: Token interface with game mechanics
+- **IRON**: Reputation system interface
+- **IRiddleNFT_v2**: Weekly riddle system interface
 
 ### Governance (`/contracts/governance/`)
-- **Treasury**: Community treasury management
+- **TreasuryDrip**: Automated treasury distribution system
 
-## Development Setup
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+ and npm
+- Git
+
+### Installation & Setup
 
 ```bash
+# Clone the repository
+git clone https://github.com/riddlen/riddlen-contracts.git
+cd riddlen-contracts
+
 # Install dependencies
 npm install
 
 # Compile contracts
 npx hardhat compile
 
-# Run tests
-npx hardhat test
+# Run all tests
+npm test
 
-# Deploy to testnet
-npx hardhat run scripts/deploy.js --network sepolia
+# Check test coverage
+npm run coverage
 ```
 
-## Testing
+### 🧪 Testing
+
+The project includes comprehensive test suites for all major components:
 
 ```bash
-# Run all tests
-npm run test
+# Run specific contract tests
+npx hardhat test test/RDLN.test.js        # Token tests (20 passing)
+npx hardhat test test/RON.test.js         # Reputation tests (26 passing)
+npx hardhat test test/RiddleNFT_v2.test.js # NFT system tests (13 passing)
 
-# Run with coverage
+# Run with gas reporting
+REPORT_GAS=true npm test
+
+# Generate coverage report
 npm run coverage
+```
 
-# Run specific test file
-npx hardhat test test/RDLN.test.js
+### 🏗️ Deployment
+
+```bash
+# Individual contract deployment
+npx hardhat run scripts/deploy-rdln.js --network sepolia      # RDLN token
+npx hardhat run scripts/deploy-ron.js --network sepolia       # RON reputation
+npx hardhat run scripts/deploy-riddlenfts.js --network sepolia # RiddleNFT system
+
+# Deploy to testnets
+npm run deploy:sepolia    # Sepolia testnet
+npm run deploy:mumbai     # Polygon Mumbai testnet
+
+# Deploy to mainnets (requires env setup)
+npm run deploy:polygon    # Polygon mainnet
+```
+
+#### Environment Setup
+Create a `.env` file with your configuration:
+
+```bash
+# Network RPC URLs
+SEPOLIA_URL=https://sepolia.infura.io/v3/YOUR_KEY
+POLYGON_URL=https://polygon-mainnet.infura.io/v3/YOUR_KEY
+MUMBAI_URL=https://polygon-mumbai.infura.io/v3/YOUR_KEY
+
+# Deployment account
+PRIVATE_KEY=your_deployer_private_key
+
+# Contract verification
+ETHERSCAN_API_KEY=your_etherscan_api_key
+POLYGONSCAN_API_KEY=your_polygonscan_api_key
+
+# Wallet addresses for deployment
+ADMIN_WALLET=0x...
+LIQUIDITY_WALLET=0x...
+DEVOPS_WALLET=0x...
 ```
 
 ## Security
