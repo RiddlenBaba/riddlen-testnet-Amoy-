@@ -1,180 +1,185 @@
-# Riddlen Protocol Smart Contracts
+# 🌐 Riddlen Amoy Testnet Repository
 
-[![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](./VERSION)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
-[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](#testing)
+[![Network](https://img.shields.io/badge/network-Polygon%20Amoy-purple.svg)](https://amoy.polygonscan.com/)
+[![Version](https://img.shields.io/badge/version-v5.1-blue.svg)](./white-paper-v5.2)
+[![Status](https://img.shields.io/badge/status-Ready%20for%20Deployment-green.svg)](./DEPLOYMENT-INSTRUCTIONS.md)
+[![Tests](https://img.shields.io/badge/ecosystem%20tests-8%2F13%20passing-orange.svg)](./test/EcosystemIntegration.test.js)
 
-Smart contracts powering the Riddlen ecosystem - a human intelligence validation network with weekly NFT riddles, progressive burn mechanics, and reputation systems.
+**Official Riddlen Amoy Testnet deployment repository** - Complete v5.1 ecosystem integration ready for live testing on Polygon's Amoy testnet.
 
-## 🎯 Overview
+## 🎯 What is This Repository?
 
-Riddlen is a Web3 protocol implementing **Proof-of-Solve** consensus through NFT-based weekly riddles. Players mint NFTs to attempt riddles, with progressive burn costs and substantial RDLN prize pools, while earning RON reputation tokens for successful solving.
+This is the **live testnet implementation** of the revolutionary Riddlen ecosystem - the first blockchain protocol that rewards human intelligence over computational power or capital stakes through **Proof-of-Solve consensus**.
 
-### ✨ Key Features (v0.3.0)
+### 🌐 **Testnet Information**
+- **Network**: Polygon Amoy Testnet (Chain ID: 80002)
+- **Explorer**: https://amoy.polygonscan.com/
+- **Faucet**: https://faucet.polygon.technology/
+- **Version**: Riddlen v5.1 Ecosystem Integration
 
-- 🧩 **Weekly Riddle System**: 1000 riddles over 20 years starting January 1, 2025
-- 🔥 **Progressive Burn Protocol**: Failed attempts cost 1, 2, 3... N RDLN per NFT
-- 💰 **Massive Prize Pools**: 700M RDLN allocated across randomized prize distributions
-- 🏆 **RON Reputation System**: Soul-bound tokens for intelligence validation
-- 🔄 **NFT Resale Market**: Tradeable riddle NFTs with commission structure
-- ⏰ **Biennial Halving**: Mint costs halve every 2 years
-- 🎲 **Randomized Parameters**: Each riddle has unique mint rates, prizes, and winner slots
+### 🚀 **Revolutionary Features Being Tested**
 
-## 📋 Contract Architecture
+- 🧠 **Merit-Based Governance**: "Brain matters more than bank account" - voting power earned through intelligence
+- 🎮 **NFT-as-Game Architecture**: Interactive riddle experiences vs static collectibles
+- 📈 **Progressive Economics**: Biennial halving schedule with sustainable burn mechanisms
+- 🔒 **Cross-Contract Security**: Anti-cheating and Sybil resistance across the entire ecosystem
+- ⚡ **Soul-Bound Reputation**: Non-transferable RON tokens representing earned intelligence
+- 🎯 **AI-Human Collaboration**: Community-validated questions with fair AI assembly
 
-### Core System Contracts
+## 📋 **Live Contract Addresses**
 
-| Contract | Description | Status | Tests |
-|----------|-------------|--------|-------|
-| **RDLN.sol** | ERC20 token with burn mechanics | ✅ Complete | 20 passing |
-| **RON.sol** | Soul-bound reputation system | ✅ Complete | 26 passing |
-| **RiddleNFT_v2.sol** | Weekly riddle NFT system | ✅ Complete | 13 passing |
+> **Status**: Ready for deployment to Amoy testnet
 
-### Token Contracts (`/contracts/token/`)
-- **RDLN**: Main utility token (1B supply, progressive burns, allocations)
-- **RON**: Reputation token (soul-bound, tier-based, oracle validation)
+Once deployed, this will include:
 
-### NFT Contracts (`/contracts/nft/`)
-- **RiddleNFT_v2**: Weekly riddle system with resale mechanics
-- **RiddleNFT_v1**: Legacy attempt-based system (deprecated)
+| Contract | Description | Address | Verification |
+|----------|-------------|---------|--------------|
+| **RDLNUpgradeable** | Merit-based utility token with allocation-specific minting | *Pending Deployment* | *Pending* |
+| **RONAdvanced** | Soul-bound reputation system with governance weights | *Pending Deployment* | *Pending* |
+| **RiddleNFTAdvanced** | Interactive NFT-as-Game implementation | *Pending Deployment* | *Pending* |
 
-### Interfaces (`/contracts/interfaces/`)
-- **IRDLN**: Token interface with game mechanics
-- **IRON**: Reputation system interface
-- **IRiddleNFT_v2**: Weekly riddle system interface
+*Contract addresses will be updated here after deployment*
 
-### Governance (`/contracts/governance/`)
-- **TreasuryDrip**: Automated treasury distribution system
+## 🏗️ **v5.1 Ecosystem Architecture**
 
-## 🚀 Quick Start
+### **Advanced Token System**
+- **RDLNUpgradeable**: UUPS upgradeable token with allocation-specific minting (Treasury, Airdrop, Prize Pool, Liquidity)
+- **RONAdvanced**: Merit-based reputation with governance weight calculation and democratic safeguards
 
-### Prerequisites
+### **Revolutionary NFT Gaming**
+- **RiddleNFTAdvanced**: Interactive NFT-as-Game with progressive difficulty, randomized parameters, and anti-cheating mechanisms
+
+### **Cross-Contract Integration**
+- **Role-Based Security**: Multi-signature access control across ecosystem
+- **Merit-Based Governance**: RON reputation drives voting power calculations
+- **Progressive Economics**: Biennial halving and burn mechanisms integration
+
+## 🚀 **Quick Start for Testnet Deployment**
+
+### **Prerequisites**
 - Node.js 18+ and npm
-- Git
+- Amoy testnet MATIC for gas fees ([Get from faucet](https://faucet.polygon.technology/))
+- Private key for deployment wallet
+- PolygonScan API key for verification
 
-### Installation & Setup
+### **Deploy the v5.1 Ecosystem**
 
 ```bash
-# Clone the repository
-git clone https://github.com/riddlen/riddlen-contracts.git
-cd riddlen-contracts
+# 1. Clone this repository
+git clone https://github.com/RiddlenBaba/riddlen-testnet-Amoy-.git
+cd riddlen-testnet-Amoy-
 
-# Install dependencies
+# 2. Install dependencies
 npm install
 
-# Compile contracts
-npx hardhat compile
+# 3. Configure environment
+cp .env.example .env
+# Edit .env with your PRIVATE_KEY and POLYGONSCAN_API_KEY
 
-# Run all tests
-npm test
+# 4. Deploy complete ecosystem to Amoy testnet
+npx hardhat run scripts/deploy-amoy-testnet.js --network amoy
 
-# Check test coverage
-npm run coverage
+# 5. Verify contracts (optional)
+npx hardhat verify --network amoy [CONTRACT_ADDRESS]
 ```
 
-### 🧪 Testing
+### **What Gets Deployed**
+- ✅ **RDLNUpgradeable**: Merit-based token with burn mechanisms
+- ✅ **RONAdvanced**: Soul-bound reputation with governance weights
+- ✅ **RiddleNFTAdvanced**: Interactive NFT-as-Game architecture
+- ✅ **Cross-contract integration**: Complete ecosystem connectivity
 
-The project includes comprehensive test suites for all major components:
+## 🧪 **What Can You Test?**
 
+### **Core Ecosystem Features**
+- **Token Operations**: Mint, transfer, burn mechanisms with RDLN
+- **Reputation Building**: Solve riddles, earn RON, advance through access tiers
+- **NFT Gaming**: Create riddle sessions, submit answers, claim rewards
+- **Cross-Contract Flow**: Complete user journey from RDLN → Riddles → RON → Governance
+
+### **Revolutionary Concepts**
+- **Merit-Based Governance**: Participate in proposals where intelligence > wealth
+- **Progressive Economics**: Experience biennial halving and burn mechanisms
+- **AI-Human Collaboration**: Community-validated questions with fair assembly
+- **Oracle Network Preview**: Foundation for enterprise validation services
+
+### **Run Integration Tests**
 ```bash
-# Run specific contract tests
-npx hardhat test test/RDLN.test.js        # Token tests (20 passing)
-npx hardhat test test/RON.test.js         # Reputation tests (26 passing)
-npx hardhat test test/RiddleNFT_v2.test.js # NFT system tests (13 passing)
+# Test complete ecosystem integration (8/13 passing)
+npm test test/EcosystemIntegration.test.js
+
+# Test individual components
+npx hardhat test test/RDLNUpgradeable.test.js  # Advanced token tests
+npx hardhat test test/RONUpgradeable.test.js   # Advanced reputation tests
 
 # Run with gas reporting
 REPORT_GAS=true npm test
-
-# Generate coverage report
-npm run coverage
 ```
 
-### 🏗️ Deployment
+## 📚 **Documentation**
 
-```bash
-# Individual contract deployment
-npx hardhat run scripts/deploy-rdln.js --network sepolia      # RDLN token
-npx hardhat run scripts/deploy-ron.js --network sepolia       # RON reputation
-npx hardhat run scripts/deploy-riddlenfts.js --network sepolia # RiddleNFT system
+- **📋 [Complete Deployment Guide](DEPLOYMENT-INSTRUCTIONS.md)**: Step-by-step instructions for Amoy testnet deployment
+- **🌐 [Testnet Overview](TESTNET-DEPLOYMENT.md)**: Comprehensive testnet documentation and features
+- **📖 [White Paper v5.2](white-paper-v5.2)**: Complete protocol vision and v5.2 roadmap
+- **🧪 [Integration Tests](test/EcosystemIntegration.test.js)**: 8/13 passing ecosystem validation tests
 
-# Deploy to testnets
-npm run deploy:sepolia    # Sepolia testnet
-npm run deploy:mumbai     # Polygon Mumbai testnet
+## 🎮 **How to Participate in Testing**
 
-# Deploy to mainnets (requires env setup)
-npm run deploy:polygon    # Polygon mainnet
-```
+### **For General Users**
+1. **Get Testnet MATIC**: Visit [Polygon Faucet](https://faucet.polygon.technology/)
+2. **Connect Wallet**: Use MetaMask with Amoy network configuration
+3. **Start Playing**: Solve riddles, earn RON, participate in governance
+4. **Provide Feedback**: Report issues or suggestions via GitHub Issues
 
-#### Environment Setup
-Create a `.env` file with your configuration:
+### **For Developers**
+1. **Deploy Locally**: Follow the deployment guide for local testing
+2. **Run Test Suite**: `npm test` to validate ecosystem integration
+3. **Contribute**: Submit PRs for improvements or additional features
+4. **Build**: Integrate with the testnet contracts for your applications
 
-```bash
-# Network RPC URLs
-SEPOLIA_URL=https://sepolia.infura.io/v3/YOUR_KEY
-POLYGON_URL=https://polygon-mainnet.infura.io/v3/YOUR_KEY
-MUMBAI_URL=https://polygon-mumbai.infura.io/v3/YOUR_KEY
+## 🏆 **Milestone: v5.1 → v5.2**
 
-# Deployment account
-PRIVATE_KEY=your_deployer_private_key
+This testnet deployment represents the completion of **Riddlen v5.1** and sets the foundation for **v5.2**:
 
-# Contract verification
-ETHERSCAN_API_KEY=your_etherscan_api_key
-POLYGONSCAN_API_KEY=your_polygonscan_api_key
+### **✅ v5.1 Achievements (This Testnet)**
+- Complete ecosystem integration with merit-based governance
+- NFT-as-Game architecture with interactive experiences
+- Progressive economics with biennial halving
+- Cross-contract security and anti-cheating mechanisms
 
-# Wallet addresses for deployment
-ADMIN_WALLET=0x...
-LIQUIDITY_WALLET=0x...
-DEVOPS_WALLET=0x...
-```
+### **🎯 v5.2 Roadmap (Next Phase)**
+- Autonomous AI Agent integration on Akash Network
+- Enterprise Oracle Network for validation services
+- Community airdrops (Phase 1: social proof, Phase 2: merit-based)
+- Professional security audit and mainnet deployment
 
-## Security
+## 🤝 **Community & Support**
 
-- All contracts undergo comprehensive testing
-- External audits planned before mainnet deployment
-- Formal verification for critical components
-- Bug bounty program (details TBA)
+- **Main Repository**: [riddlen-contracts](https://github.com/RiddlenBaba/riddlen-contracts)
+- **Documentation Hub**: [riddlen](https://github.com/RiddlenBaba/riddlen)
+- **Twitter**: [@RiddlenToken](https://twitter.com/RiddlenToken)
+- **Telegram**: Official community group
+- **Issues**: Use GitHub Issues for bug reports and feature requests
 
-## 📚 Documentation
+## ⚡ **Quick Links**
 
-### Core Concepts
-- [Tokenomics](docs/guides/tokenomics.md) - Economic model and token distribution
-- [NFT Mechanics](docs/guides/nft-mechanics.md) - Weekly riddle system and solving mechanics
-- [Burning Protocol](docs/guides/burning-protocol.md) - Deflationary mechanisms and game theory
+- 🌐 **[Amoy PolygonScan](https://amoy.polygonscan.com/)** - View transactions and contracts
+- 🚰 **[Polygon Faucet](https://faucet.polygon.technology/)** - Get testnet MATIC
+- 📋 **[Deploy Guide](DEPLOYMENT-INSTRUCTIONS.md)** - Complete deployment instructions
+- 🧪 **[Test Locally](scripts/test-deployment.js)** - Local development testing
 
-### Technical References
-- [API Reference](docs/api/api.md) - Complete smart contract API documentation
-- [Contract Specifications](docs/contracts/) - Detailed contract documentation
-- [Deployment Guide](docs/deployment/) - Network deployment information
-- [Developer Guides](docs/guides/) - Implementation and integration guides
+## 🔮 **The Future of Human Intelligence**
 
-## Deployment
+This testnet demonstrates that decentralized systems can effectively harness human collective intelligence while creating meaningful economic incentives. By separating financial tokens (RDLN) from intellectual reputation (RON), Riddlen solves fundamental problems in both gaming economies and oracle validation systems.
 
-### Testnets
-- **Sepolia**: Coming soon
-- **Polygon Mumbai**: Coming soon
+**Join us in testing the future where intelligence matters more than capital!** 🧠 > 💰
 
-### Mainnet
-- **Ethereum**: Planned
-- **Polygon**: Planned
+---
 
-## Contributing
+**🤖 Generated with [Claude Code](https://claude.com/claude-code)**
 
-1. Fork the repository
-2. Create a feature branch
-3. Write tests for new functionality
-4. Ensure all tests pass
-5. Submit a pull request
+**The Future is Human-Powered Intelligence—Enhanced by AI, Governed by Merit, Secured by Mathematics.**
 
-## License
+## 📄 License
 
-[MIT License](LICENSE)
-
-## Security Contact
-
-For security issues, please email: security@riddlen.com
-
-## Community
-
-- [Discord](https://discord.gg/riddlen)
-- [Twitter](https://twitter.com/riddlen)
-- [Website](https://riddlen.com)
+Apache 2.0 - See [LICENSE](LICENSE) for details.
