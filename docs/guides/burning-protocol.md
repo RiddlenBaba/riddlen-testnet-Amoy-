@@ -64,27 +64,76 @@ Nth question → N RDLN burned
 
 ### 3. NFT Minting Burns
 
-Each riddle NFT mint burns RDLN tokens based on biennial halving schedule:
+Each riddle NFT mint burns RDLN tokens based on the **biennial halving schedule** from the whitepaper:
 
 | Period | Mint Cost | Notes |
 |--------|-----------|-------|
-| 2025-2026 | 1.0 RDLN | Genesis period |
-| 2027-2028 | 0.5 RDLN | 1st halving event |
-| 2029-2030 | 0.25 RDLN | 2nd halving event |
-| 2031-2032 | 0.125 RDLN | 3rd halving event |
+| 2025-2026 | 1,000 RDLN | Genesis period |
+| 2027-2028 | 500 RDLN | 1st halving event |
+| 2029-2030 | 250 RDLN | 2nd halving event |
+| 2031-2032 | 125 RDLN | 3rd halving event |
+| 2033-2034 | 62 RDLN | 4th halving event |
+| 2035-2036 | 31 RDLN | 5th halving event |
+| 2037-2038 | 15 RDLN | 6th halving event |
+| 2039-2040 | 7 RDLN | 7th halving event |
+| 2041-2042 | 3 RDLN | 8th halving event |
+| 2043-2044 | 1.5 RDLN | Final minimum cost |
+
+**All minting costs follow the burn protocol:** 50% burned, 25% Grand Prize, 25% dev/ops
 
 #### Halving Rationale
-- **Early adopter premium**: Higher costs during initial growth
-- **Accessibility maintenance**: Costs reduce as ecosystem matures
-- **Long-term sustainability**: Prevents excessive barriers to entry
+- **Early adopter premium**: Higher costs during initial growth phase
+- **Long-term accessibility**: Costs reduce to maintain participation
+- **Economic sustainability**: Prevents death spiral scenarios
 
-### 4. Transfer Burns (Optional)
+### 4. Transaction Burn Distribution
 
-Configurable burn mechanism for regular transfers:
+**Critical Correction:** All transaction burns follow a three-way allocation as specified in the whitepaper:
 
-- **Standard transfers**: 0-5% burn rate (configurable)
-- **DEX trading**: Optional additional burn on large trades
-- **Emergency deflation**: Increasable during high inflation periods
+**Burn Distribution (Every Transaction):**
+- **50% Permanently Burned** → Removed from total supply (deflationary pressure)
+- **25% Grand Prize Pool** → Accumulates for legendary community events
+- **25% Dev/Ops Wallet** → Sustainable development and operational funding
+
+**Gasless Experience Economics:**
+This burn structure enables Riddlen's gasless user experience by:
+- Creating sustainable funding streams for gas subsidization
+- Building excitement through Grand Prize accumulations
+- Maintaining deflationary pressure for long-term value
+
+## Grand Prize Pool Accumulation System
+
+### Funding Mechanism
+
+The **Grand Prize Pool** represents one of Riddlen's most innovative economic features:
+
+**Accumulation Sources:**
+- **25% of all failed riddle attempts** → Progressive burns contribute to Grand Prize
+- **25% of all NFT minting costs** → Biennial halving schedule payments
+- **25% of all question submission burns** → Progressive submission costs
+- **25% of any other transaction burns** → Future burn mechanisms
+
+### Security and Management
+
+**Multi-Signature Protection:**
+- **4-of-5 signature requirement** for Grand Prize vault access (highest security)
+- **Transparent accumulation tracking** for community visibility
+- **Scheduled distribution events** preventing indefinite accumulation
+- **Community governance** for distribution timing and amounts
+
+### Distribution Strategy
+
+**Legendary Events:**
+- **Quarterly Grand Prize riddles** with accumulated pool distributions
+- **Annual mega-events** with substantial community excitement
+- **Special occasion releases** for milestones and celebrations
+- **Community-voted events** through governance mechanisms
+
+**Economic Impact:**
+- Creates sustained excitement and participation incentives
+- Provides irregular but massive prize opportunities
+- Demonstrates protocol's long-term value accumulation
+- Funds gasless experience through economic sustainability
 
 ## Burn Tracking and Analytics
 

@@ -19,10 +19,19 @@ The Riddlen ecosystem is powered by two complementary tokens that work together 
 
 | Allocation | Amount | Percentage | Purpose |
 |------------|--------|------------|---------|
-| **Prize Pool** | 700,000,000 RDLN | 70% | Riddle winner rewards |
-| **Treasury** | 100,000,000 RDLN | 10% | Development & operations |
-| **Airdrop** | 100,000,000 RDLN | 10% | Community distribution |
-| **Liquidity** | 100,000,000 RDLN | 10% | DEX liquidity provision |
+| **Riddle Prize Pool** | 700,000,000 RDLN | 70% | Weekly riddle winner rewards |
+| **Treasury Reserve** | 100,000,000 RDLN | 10% | Development & operations (1M/month) |
+| **Community Airdrop** | 100,000,000 RDLN | 10% | Early adoption incentives |
+| **Liquidity Pool** | 100,000,000 RDLN | 10% | DEX liquidity and market stability |
+
+### Grand Prize Pool System
+
+In addition to the core allocations, Riddlen implements a **Grand Prize accumulation system** funded by transaction burns:
+
+- **25% of all transaction burns** → Grand Prize wallet accumulation
+- **Quarterly/Annual events** → Massive prize pool distributions
+- **Multi-signature security** → 4-of-5 signature requirement for Grand Prize vault
+- **Community excitement** → Legendary riddles with unprecedented rewards
 
 ### Deflationary Mechanisms
 
@@ -43,14 +52,39 @@ The Riddlen protocol implements a unique progressive burn system where costs inc
 
 #### 2. NFT Minting Burns
 
-- Configurable burn amounts for riddle NFT minting
-- Implements biennial halving (costs reduce 50% every 2 years)
-- All burned tokens are permanently removed from circulation
+NFT minting follows the **biennial halving schedule** as specified in the whitepaper:
 
-#### 3. Transfer Burns
+**Biennial Halving Schedule:**
+```
+Years 1-2:   1,000 RDLN per riddle attempt
+Years 3-4:     500 RDLN per riddle attempt
+Years 5-6:     250 RDLN per riddle attempt
+Years 7-8:     125 RDLN per riddle attempt
+Years 9-10:     62 RDLN per riddle attempt
+Years 11-12:    31 RDLN per riddle attempt
+Years 13-14:    15 RDLN per riddle attempt
+Years 15-16:     7 RDLN per riddle attempt
+Years 17-18:     3 RDLN per riddle attempt
+Years 19-20:   1.5 RDLN per riddle attempt (final minimum)
+```
 
-- Optional burn-on-transfer mechanics for ecosystem sustainability
-- Configurable burn rates for different transfer types
+**Burn Distribution:** All NFT minting costs follow the standard burn protocol (50% burned, 25% Grand Prize, 25% dev/ops)
+
+#### 3. Transaction Burn Distribution
+
+All transaction burns follow a three-way split supporting ecosystem sustainability:
+
+**Burn Allocation (Per Transaction):**
+- **50% Permanently Burned** → Removed from circulation (deflationary pressure)
+- **25% Grand Prize Pool** → Accumulates for legendary events
+- **25% Dev/Ops Wallet** → Long-term development and operations funding
+
+**Gasless Experience Design:**
+The burn mechanism supports a gasless user experience by:
+- Reducing total supply through permanent burns
+- Building massive Grand Prize pools for community excitement
+- Securing sustainable funding for platform development
+- Creating economic value that offsets gas subsidization costs
 
 ### Prize Pool Economics
 

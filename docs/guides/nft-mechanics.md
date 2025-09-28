@@ -39,15 +39,22 @@ struct RiddleParameters {
 
 ### Cost Structure with Biennial Halving
 
-The minting cost implements a unique halving mechanism every 2 years:
+The minting cost follows the **biennial halving schedule** as specified in the whitepaper:
 
-| Period | Base Cost | Halving Event |
-|--------|-----------|---------------|
-| 2025-2026 | 1.0 RDLN | Genesis cost |
-| 2027-2028 | 0.5 RDLN | 1st halving (50% reduction) |
-| 2029-2030 | 0.25 RDLN | 2nd halving |
-| 2031-2032 | 0.125 RDLN | 3rd halving |
-| ... | ... | Continues every 2 years |
+| Period | Mint Cost | Burn Distribution |
+|--------|-----------|-------------------|
+| 2025-2026 | 1,000 RDLN | 500 burned, 250 Grand Prize, 250 dev/ops |
+| 2027-2028 | 500 RDLN | 250 burned, 125 Grand Prize, 125 dev/ops |
+| 2029-2030 | 250 RDLN | 125 burned, 62.5 Grand Prize, 62.5 dev/ops |
+| 2031-2032 | 125 RDLN | 62.5 burned, 31.25 Grand Prize, 31.25 dev/ops |
+| 2033-2034 | 62 RDLN | 31 burned, 15.5 Grand Prize, 15.5 dev/ops |
+| 2035-2036 | 31 RDLN | 15.5 burned, 7.75 Grand Prize, 7.75 dev/ops |
+| 2037-2038 | 15 RDLN | 7.5 burned, 3.75 Grand Prize, 3.75 dev/ops |
+| 2039-2040 | 7 RDLN | 3.5 burned, 1.75 Grand Prize, 1.75 dev/ops |
+| 2041-2042 | 3 RDLN | 1.5 burned, 0.75 Grand Prize, 0.75 dev/ops |
+| 2043-2044 | 1.5 RDLN | 0.75 burned, 0.375 Grand Prize, 0.375 dev/ops |
+
+**All minting costs follow burn protocol:** 50% burned, 25% Grand Prize accumulation, 25% dev/ops funding
 
 ### Minting Process
 
@@ -132,19 +139,22 @@ struct NFTSolveData {
 NFTs can be traded on a built-in resale market with automatic commission distribution:
 
 - **Seller Control**: Token owners set their own resale prices
-- **Commission Structure**: 50% burn / 25% liquidity / 25% devOps
+- **Commission Structure**: 50% burn / 25% Grand Prize / 25% dev/ops (follows burn protocol)
 - **Attempt Preservation**: Failed attempts and solve data transfer with NFT
+- **Grand Prize Contribution**: Every resale builds towards legendary events
 
 ### Commission Distribution
 
-When an NFT is resold, commissions are automatically distributed:
+When an NFT is resold, commissions are automatically distributed according to the burn protocol:
 
 ```
 Sale Price: 100 RDLN
-├── 50 RDLN → Burned (deflationary pressure)
-├── 25 RDLN → Liquidity Wallet (DEX support)
-└── 25 RDLN → DevOps Wallet (development funding)
+├── 50 RDLN → Permanently Burned (deflationary pressure)
+├── 25 RDLN → Grand Prize Pool (legendary event accumulation)
+└── 25 RDLN → Dev/Ops Wallet (development funding)
 ```
+
+**Grand Prize Accumulation:** Every NFT trade contributes to the growing Grand Prize pool for epic community events
 
 ### Resale Process
 

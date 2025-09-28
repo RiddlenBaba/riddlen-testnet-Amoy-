@@ -56,10 +56,12 @@ Mints RDLN tokens from the liquidity allocation (100M max).
 
 ### `getRemainingAllocations() → (uint256, uint256, uint256, uint256)`
 Returns remaining amounts for each allocation:
-- `prizePoolRemaining`: Unminted prize pool tokens
-- `treasuryRemaining`: Unminted treasury tokens
-- `airdropRemaining`: Unminted airdrop tokens
-- `liquidityRemaining`: Unminted liquidity tokens
+- `prizePoolRemaining`: Unminted prize pool tokens (700M allocation)
+- `treasuryRemaining`: Unminted treasury tokens (100M allocation)
+- `airdropRemaining`: Unminted airdrop tokens (100M allocation)
+- `liquidityRemaining`: Unminted liquidity tokens (100M allocation)
+
+**Note**: Grand Prize Pool accumulates separately from these allocations through burn protocol (25% of all burns)
 
 ## Game Mechanics
 
@@ -81,7 +83,33 @@ Burns RDLN tokens for submitting a new riddle question.
 
 ### `burnNFTMint(address user, uint256 cost)`
 **Access**: `GAME_ROLE`
-Burns a fixed amount of RDLN tokens for NFT minting.
+Burns RDLN tokens for NFT minting following biennial halving schedule and burn protocol.
+
+**Cost Schedule**: 1,000 RDLN (2025-26) → 500 RDLN (2027-28) → 250 RDLN (2029-30) → etc.
+**Distribution**: 50% burned, 25% Grand Prize accumulation, 25% dev/ops funding
+
+## Grand Prize Pool System
+
+### Core Concept
+The Grand Prize Pool represents accumulated RDLN from the burn protocol's 25% allocation, creating massive prize opportunities for legendary community events.
+
+### Accumulation Sources
+- **Failed Attempt Burns**: 25% of progressive burn costs
+- **NFT Minting**: 25% of biennial halving costs
+- **Question Submissions**: 25% of progressive submission costs
+- **Future Burns**: 25% of any additional burn mechanisms
+
+### Security Framework
+- **Multi-signature vault**: 4-of-5 signature requirement (highest security level)
+- **Transparent tracking**: Community visibility into accumulation
+- **Scheduled distributions**: Prevents indefinite accumulation
+- **Governance control**: Community voting on distribution events
+
+### Distribution Events
+- **Quarterly Grand Prize riddles**: Regular legendary events
+- **Annual mega-events**: Massive community celebrations
+- **Special occasions**: Milestone and achievement rewards
+- **Community governance**: Voted distribution timing and amounts
 
 ## Analytics and Statistics
 
@@ -365,7 +393,9 @@ Claims RDLN prize for a solved NFT.
 Lists an NFT for sale at a specified price.
 
 ### `buyNFT(uint256 tokenId) payable`
-Purchases an NFT at the listed price with commission distribution.
+Purchases an NFT at the listed price with commission distribution following burn protocol.
+
+**Commission Distribution**: 50% burned, 25% Grand Prize accumulation, 25% dev/ops funding
 
 ### `getResaleInfo(uint256 tokenId) → (bool, uint256, address)`
 Returns resale information:
@@ -434,7 +464,7 @@ Emitted when a riddle solution is attempted.
 Emitted when a riddle is successfully solved.
 
 ### `NFTResold(uint256 indexed tokenId, address indexed from, address indexed to, uint256 salePrice, uint256 commission)`
-Emitted when an NFT is sold on the resale market.
+Emitted when an NFT is sold on the resale market with burn protocol distribution.
 
 ### `PrizeClaimed(uint256 indexed tokenId, address indexed claimer, uint256 amount)`
 Emitted when RDLN prizes are claimed.

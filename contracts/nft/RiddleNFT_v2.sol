@@ -30,15 +30,15 @@ contract RiddleNFT is
     uint256 public constant TOTAL_WEEKS = 1000;
     uint256 public constant BIENNIAL_PERIOD = 730 days; // 2 years
 
-    uint256 public constant INITIAL_MINT_COST = 1e18; // 1 RDLN
+    uint256 public constant INITIAL_MINT_COST = 1000e18; // 1000 RDLN per whitepaper
     uint256 public constant PRIZE_ALLOCATION = 700_000_000e18; // 700M RDLN
 
     // Commission rates (in basis points, 10000 = 100%)
     uint256 public burnPercent = 5000;     // 50%
-    uint256 public liquidityPercent = 2500; // 25%
+    uint256 public grandPrizePercent = 2500; // 25%
     uint256 public devOpsPercent = 2500;   // 25%
 
-    address public liquidityWallet;
+    address public grandPrizeWallet;
     address public devOpsWallet;
 
     uint256 public currentWeek;
@@ -72,19 +72,19 @@ contract RiddleNFT is
     constructor(
         address _rdlnToken,
         address _ronToken,
-        address _liquidityWallet,
+        address _grandPrizeWallet,
         address _devOpsWallet,
         address _admin
     ) ERC721("Riddlen Weekly NFT", "RWKLY") {
         require(_rdlnToken != address(0), "Invalid RDLN address");
         require(_ronToken != address(0), "Invalid RON address");
-        require(_liquidityWallet != address(0), "Invalid liquidity wallet");
+        require(_grandPrizeWallet != address(0), "Invalid Grand Prize wallet");
         require(_devOpsWallet != address(0), "Invalid devOps wallet");
         require(_admin != address(0), "Invalid admin address");
 
         rdlnToken = IRDLN(_rdlnToken);
         ronToken = IRON(_ronToken);
-        liquidityWallet = _liquidityWallet;
+        grandPrizeWallet = _grandPrizeWallet;
         devOpsWallet = _devOpsWallet;
 
         _grantRole(DEFAULT_ADMIN_ROLE, _admin);
@@ -281,9 +281,9 @@ contract RiddleNFT is
         uint256 salePrice = tokenResalePrice[tokenId];
 
         // Calculate commissions
-        uint256 totalCommission = (salePrice * (burnPercent + liquidityPercent + devOpsPercent)) / 10000;
+        uint256 totalCommission = (salePrice * (burnPercent + grandPrizePercent + devOpsPercent)) / 10000;
         uint256 burnAmount = (salePrice * burnPercent) / 10000;
-        uint256 liquidityAmount = (salePrice * liquidityPercent) / 10000;
+        uint256 grandPrizeAmount = (salePrice * grandPrizePercent) / 10000;
         uint256 devOpsAmount = (salePrice * devOpsPercent) / 10000;
         uint256 sellerAmount = salePrice - totalCommission;
 
@@ -299,7 +299,7 @@ contract RiddleNFT is
 
         // Distribute payments
         payable(seller).transfer(sellerAmount);
-        payable(liquidityWallet).transfer(liquidityAmount);
+        payable(grandPrizeWallet).transfer(grandPrizeAmount);
         payable(devOpsWallet).transfer(devOpsAmount);
 
         // Handle burn (convert ETH to RDLN via DEX and burn)
@@ -313,7 +313,7 @@ contract RiddleNFT is
         }
 
         emit NFTResold(tokenId, seller, msg.sender, salePrice, totalCommission);
-        emit CommissionDistributed(totalCommission, burnAmount, liquidityAmount, devOpsAmount);
+        emit CommissionDistributed(totalCommission, burnAmount, grandPrizeAmount, devOpsAmount);
     }
 
     function getCurrentWeek() public view returns (uint256) {
@@ -448,12 +448,12 @@ contract RiddleNFT is
     // Admin functions
     function updateCommissionRates(
         uint256 _burnPercent,
-        uint256 _liquidityPercent,
+        uint256 _grandPrizePercent,
         uint256 _devOpsPercent
     ) external onlyRole(ADMIN_ROLE) {
-        require(_burnPercent + _liquidityPercent + _devOpsPercent <= 10000, "Total exceeds 100%");
+        require(_burnPercent + _grandPrizePercent + _devOpsPercent <= 10000, "Total exceeds 100%");
         burnPercent = _burnPercent;
-        liquidityPercent = _liquidityPercent;
+        grandPrizePercent = _grandPrizePercent;
         devOpsPercent = _devOpsPercent;
     }
 
@@ -462,9 +462,15 @@ contract RiddleNFT is
         devOpsWallet = newWallet;
     }
 
+    function setGrandPrizeWallet(address newWallet) external onlyRole(ADMIN_ROLE) {
+        require(newWallet != address(0), "Invalid address");
+        grandPrizeWallet = newWallet;
+    }
+
     function setLiquidityWallet(address newWallet) external onlyRole(ADMIN_ROLE) {
         require(newWallet != address(0), "Invalid address");
-        liquidityWallet = newWallet;
+        // Note: liquidityWallet not yet implemented in this contract
+        // This function exists for interface compatibility
     }
 
     function pause() external onlyRole(ADMIN_ROLE) {

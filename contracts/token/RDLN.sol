@@ -3,6 +3,8 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
@@ -20,7 +22,7 @@ import "../interfaces/IRDLN.sol";
  * - 100M RDLN: Community airdrop (10%)
  * - 100M RDLN: Liquidity (10%)
  */
-contract RDLN is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausable, IRDLN {
+contract RDLN is ERC20, ERC20Burnable, ERC20Permit, ERC20Votes, AccessControl, ReentrancyGuard, Pausable, IRDLN {
 
     // ============ CONSTANTS ============
 
@@ -57,14 +59,54 @@ contract RDLN is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausable,
     address public treasuryWallet;
     address public liquidityWallet;
     address public airdropWallet;
+    address public grandPrizeWallet; // Grand Prize accumulation wallet
 
     // Deflationary settings
     bool public burnOnTransferEnabled;
     uint256 public transferBurnRate = 100; // 1% burn on transfers (100/10000)
     uint256 public constant MAX_BURN_RATE = 500; // Max 5% burn rate
 
+    // Circuit breaker mechanisms (following best practices)
+    uint256 public constant MAX_DAILY_BURN = 10_000_000 * 10**18; // 10M RDLN per day
+    uint256 public constant MAX_SINGLE_BURN = 1_000_000 * 10**18; // 1M RDLN per transaction
+    mapping(uint256 => uint256) public dailyBurnAmount; // day => amount burned
+
     // ============ EVENTS ============
 
+    // Enhanced event logging (following 2025 best practices)
+    event BurnExecuted(
+        address indexed user,
+        uint256 indexed burnType, // 0=failed_attempt, 1=question, 2=nft_mint
+        uint256 totalAmount,
+        uint256 burnedAmount,
+        uint256 grandPrizeAmount,
+        uint256 devOpsAmount,
+        uint256 timestamp
+    );
+
+    event CircuitBreakerTriggered(
+        address indexed user,
+        uint256 attemptedAmount,
+        uint256 dailyLimit,
+        uint256 singleLimit,
+        uint256 timestamp
+    );
+
+    event SnapshotCreated(
+        uint256 indexed snapshotId,
+        address indexed creator,
+        uint256 totalSupply,
+        uint256 timestamp
+    );
+
+    event EmergencyAction(
+        address indexed admin,
+        string indexed action,
+        bytes data,
+        uint256 timestamp
+    );
+
+    // Legacy events (maintained for backward compatibility)
     event BurnOnTransferToggled(bool enabled);
     event TransferBurnRateUpdated(uint256 oldRate, uint256 newRate);
     event WalletUpdated(string indexed walletType, address indexed oldWallet, address indexed newWallet);
@@ -76,6 +118,8 @@ contract RDLN is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausable,
     error InvalidBurnRate(uint256 rate);
     error InsufficientBalance(address user, uint256 required, uint256 available);
     error GameContractOnly();
+    error DailyBurnLimitExceeded(uint256 requested, uint256 dailyLimit);
+    error SingleBurnLimitExceeded(uint256 requested, uint256 singleLimit);
 
     // ============ CONSTRUCTOR ============
 
@@ -83,16 +127,19 @@ contract RDLN is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausable,
         address _admin,
         address _treasuryWallet,
         address _liquidityWallet,
-        address _airdropWallet
-    ) ERC20("Riddlen", "RDLN") {
+        address _airdropWallet,
+        address _grandPrizeWallet
+    ) ERC20("Riddlen", "RDLN") ERC20Permit("Riddlen") {
         if (_admin == address(0)) revert InvalidAddress(_admin);
         if (_treasuryWallet == address(0)) revert InvalidAddress(_treasuryWallet);
         if (_liquidityWallet == address(0)) revert InvalidAddress(_liquidityWallet);
         if (_airdropWallet == address(0)) revert InvalidAddress(_airdropWallet);
+        if (_grandPrizeWallet == address(0)) revert InvalidAddress(_grandPrizeWallet);
 
         treasuryWallet = _treasuryWallet;
         liquidityWallet = _liquidityWallet;
         airdropWallet = _airdropWallet;
+        grandPrizeWallet = _grandPrizeWallet;
 
         // Setup roles
         _grantRole(DEFAULT_ADMIN_ROLE, _admin);
@@ -158,6 +205,26 @@ contract RDLN is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausable,
         emit AllocationMinted("LIQUIDITY", to, amount);
     }
 
+    // ============ CIRCUIT BREAKER MODIFIERS ============
+
+    /**
+     * @dev Circuit breaker to prevent excessive burns
+     * @param burnAmount Amount to be burned
+     */
+    modifier burnLimits(uint256 burnAmount) {
+        if (burnAmount > MAX_SINGLE_BURN) {
+            revert SingleBurnLimitExceeded(burnAmount, MAX_SINGLE_BURN);
+        }
+
+        uint256 today = block.timestamp / 1 days;
+        if (dailyBurnAmount[today] + burnAmount > MAX_DAILY_BURN) {
+            revert DailyBurnLimitExceeded(dailyBurnAmount[today] + burnAmount, MAX_DAILY_BURN);
+        }
+
+        dailyBurnAmount[today] += burnAmount;
+        _;
+    }
+
     // ============ GAME MECHANICS INTEGRATION ============
 
     /**
@@ -173,12 +240,44 @@ contract RDLN is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausable,
             revert InsufficientBalance(user, burnAmount, balanceOf(user));
         }
 
-        _burn(user, burnAmount);
-        gameplayBurned += burnAmount;
-        totalBurned += burnAmount;
+        // Apply circuit breaker for security
+        if (burnAmount > MAX_SINGLE_BURN) {
+            revert SingleBurnLimitExceeded(burnAmount, MAX_SINGLE_BURN);
+        }
 
+        uint256 today = block.timestamp / 1 days;
+        if (dailyBurnAmount[today] + burnAmount > MAX_DAILY_BURN) {
+            revert DailyBurnLimitExceeded(dailyBurnAmount[today] + burnAmount, MAX_DAILY_BURN);
+        }
+
+        dailyBurnAmount[today] += burnAmount;
+
+        // Implement burn protocol: 50% burned, 25% Grand Prize, 25% dev/ops
+        uint256 actualBurn = (burnAmount * 50) / 100;
+        uint256 grandPrizeAmount = (burnAmount * 25) / 100;
+        uint256 devOpsAmount = burnAmount - actualBurn - grandPrizeAmount;
+
+        _burn(user, actualBurn);
+        _transfer(user, grandPrizeWallet, grandPrizeAmount);
+        _transfer(user, treasuryWallet, devOpsAmount); // Using treasury as dev/ops wallet
+
+        gameplayBurned += actualBurn;
+        totalBurned += actualBurn;
+
+        // Enhanced event logging
+        emit BurnExecuted(
+            user,
+            0, // failed_attempt type
+            burnAmount,
+            actualBurn,
+            grandPrizeAmount,
+            devOpsAmount,
+            block.timestamp
+        );
+
+        // Legacy events for backward compatibility
         emit FailedAttemptBurn(user, failedAttempts[user], burnAmount);
-        emit GameplayBurn(user, burnAmount, "FAILED_ATTEMPT");
+        emit GameplayBurn(user, actualBurn, "FAILED_ATTEMPT");
 
         return burnAmount;
     }
@@ -196,12 +295,20 @@ contract RDLN is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausable,
             revert InsufficientBalance(user, burnAmount, balanceOf(user));
         }
 
-        _burn(user, burnAmount);
-        gameplayBurned += burnAmount;
-        totalBurned += burnAmount;
+        // Implement burn protocol: 50% burned, 25% Grand Prize, 25% dev/ops
+        uint256 actualBurn = (burnAmount * 50) / 100;
+        uint256 grandPrizeAmount = (burnAmount * 25) / 100;
+        uint256 devOpsAmount = burnAmount - actualBurn - grandPrizeAmount;
+
+        _burn(user, actualBurn);
+        _transfer(user, grandPrizeWallet, grandPrizeAmount);
+        _transfer(user, treasuryWallet, devOpsAmount); // Using treasury as dev/ops wallet
+
+        gameplayBurned += actualBurn;
+        totalBurned += actualBurn;
 
         emit QuestionSubmissionBurn(user, questionsSubmitted[user], burnAmount);
-        emit GameplayBurn(user, burnAmount, "QUESTION_SUBMISSION");
+        emit GameplayBurn(user, actualBurn, "QUESTION_SUBMISSION");
 
         return burnAmount;
     }
@@ -216,38 +323,23 @@ contract RDLN is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausable,
             revert InsufficientBalance(user, cost, balanceOf(user));
         }
 
-        _burn(user, cost);
-        gameplayBurned += cost;
-        totalBurned += cost;
+        // Implement burn protocol: 50% burned, 25% Grand Prize, 25% dev/ops
+        uint256 actualBurn = (cost * 50) / 100;
+        uint256 grandPrizeAmount = (cost * 25) / 100;
+        uint256 devOpsAmount = cost - actualBurn - grandPrizeAmount;
 
-        emit GameplayBurn(user, cost, "NFT_MINT");
+        _burn(user, actualBurn);
+        _transfer(user, grandPrizeWallet, grandPrizeAmount);
+        _transfer(user, treasuryWallet, devOpsAmount); // Using treasury as dev/ops wallet
+
+        gameplayBurned += actualBurn;
+        totalBurned += actualBurn;
+
+        emit GameplayBurn(user, actualBurn, "NFT_MINT");
     }
 
     // ============ DEFLATIONARY MECHANICS ============
 
-    /**
-     * @dev Override transfer to implement optional burn on transfer
-     */
-    function _update(address from, address to, uint256 amount) internal override {
-        require(!paused(), "RDLN: token transfer while paused");
-
-        // Apply burn on transfer if enabled (exclude minting and burning)
-        if (burnOnTransferEnabled && from != address(0) && to != address(0)) {
-            uint256 burnAmount = (amount * transferBurnRate) / 10000;
-            if (burnAmount > 0) {
-                // Burn tokens before the transfer
-                super._update(from, address(0), burnAmount);
-                transferBurned += burnAmount;
-                totalBurned += burnAmount;
-                emit TransferBurn(from, burnAmount);
-
-                // Reduce the amount to transfer by the burn amount
-                amount -= burnAmount;
-            }
-        }
-
-        super._update(from, to, amount);
-    }
 
     /**
      * @dev Enable/disable burn on transfer mechanism
@@ -384,7 +476,79 @@ contract RDLN is ERC20, ERC20Burnable, AccessControl, ReentrancyGuard, Pausable,
         emit GameplayBurn(account, amount, "EMERGENCY_BURN");
     }
 
+    // ============ VOTING FUNCTIONALITY ============
+
+    /**
+     * @dev Clock used for voting power calculations
+     */
+    function clock() public view override returns (uint48) {
+        return uint48(block.timestamp);
+    }
+
+    /**
+     * @dev Machine-readable description of the clock
+     */
+    function CLOCK_MODE() public pure override returns (string memory) {
+        return "mode=timestamp";
+    }
+
+    // ============ PERMIT FUNCTIONS ============
+
+    /**
+     * @dev Gasless approval + transfer in one transaction
+     * @notice Enables users to approve and transfer without separate transactions
+     */
+    function permitAndTransfer(
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s,
+        address to,
+        uint256 amount
+    ) external nonReentrant {
+        permit(owner, spender, value, deadline, v, r, s);
+        transferFrom(owner, to, amount);
+    }
+
+    // ============ OVERRIDE FUNCTIONS ============
+
+    /**
+     * @dev Override for _update to handle pause and snapshot functionality
+     */
+    function _update(address from, address to, uint256 amount)
+        internal
+        override(ERC20, ERC20Votes)
+        whenNotPaused
+    {
+        // Apply burn on transfer if enabled (exclude minting and burning)
+        if (burnOnTransferEnabled && from != address(0) && to != address(0)) {
+            uint256 burnAmount = (amount * transferBurnRate) / 10000;
+            if (burnAmount > 0) {
+                // Burn tokens before the transfer
+                ERC20Votes._update(from, address(0), burnAmount);
+                transferBurned += burnAmount;
+                totalBurned += burnAmount;
+                emit TransferBurn(from, burnAmount);
+
+                // Reduce the amount to transfer by the burn amount
+                amount -= burnAmount;
+            }
+        }
+
+        ERC20Votes._update(from, to, amount);
+    }
+
     // ============ COMPATIBILITY ============
+
+    /**
+     * @dev Override nonces to resolve conflict between ERC20Permit and ERC20Votes
+     */
+    function nonces(address owner) public view override(ERC20Permit, Nonces) returns (uint256) {
+        return super.nonces(owner);
+    }
 
     /**
      * @dev Override required by Solidity for multiple inheritance
