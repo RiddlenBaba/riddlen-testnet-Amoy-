@@ -134,12 +134,18 @@ DEVOPS_WALLET=0x...
 - Formal verification for critical components
 - Bug bounty program (details TBA)
 
-## Documentation
+## 📚 Documentation
 
-- [Tokenomics](docs/tokenomics.md)
-- [NFT Mechanics](docs/nft-mechanics.md)
-- [Burning Protocol](docs/burning-protocol.md)
-- [API Reference](docs/api.md)
+### Core Concepts
+- [Tokenomics](docs/guides/tokenomics.md) - Economic model and token distribution
+- [NFT Mechanics](docs/guides/nft-mechanics.md) - Weekly riddle system and solving mechanics
+- [Burning Protocol](docs/guides/burning-protocol.md) - Deflationary mechanisms and game theory
+
+### Technical References
+- [API Reference](docs/api/api.md) - Complete smart contract API documentation
+- [Contract Specifications](docs/contracts/) - Detailed contract documentation
+- [Deployment Guide](docs/deployment/) - Network deployment information
+- [Developer Guides](docs/guides/) - Implementation and integration guides
 
 ## Deployment
 
