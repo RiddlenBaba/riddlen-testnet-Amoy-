@@ -73,9 +73,9 @@ module.exports = {
   },
   etherscan: {
     apiKey: {
-      polygon: process.env.POLYGONSCAN_API_KEY || "",
-      polygonMumbai: process.env.POLYGONSCAN_API_KEY || "",
-      polygonAmoy: process.env.POLYGONSCAN_API_KEY || "",
+      polygon: process.env.ETHERSCAN_API_KEY || "",
+      polygonMumbai: process.env.ETHERSCAN_API_KEY || "",
+      polygonAmoy: process.env.ETHERSCAN_API_KEY || "",
       sepolia: process.env.ETHERSCAN_API_KEY || "",
     },
     customChains: [
